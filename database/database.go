@@ -1,7 +1,6 @@
 package database
 
 import (
-  //"bytes"
 	"database/sql"
 	"fmt"
 	"os"
@@ -26,42 +25,6 @@ func (db DB) SetMaxOpenConns(n int) {
 	db.Conn.SetMaxOpenConns(n)
 }
 
-
-/*
-func (db DB) GetOne(table string, returnValue models.User, columns []string, selectors []string,
-  values... string) {
-  var selectStmtBuffer bytes.Buffer
-  selectStmtBuffer.WriteString("SELECT ")
-
-  selectStmtBuffer.WriteString(columns[0])
-  for _, col := range(columns[1:]) {
-    selectStmtBuffer.WriteString(",")
-    selectStmtBuffer.WriteString(col)
-  }
-
-  selectStmtBuffer.WriteString(" FROM ")
-  selectStmtBuffer.WriteString(table)
-  selectStmtBuffer.WriteString(" WHERE ")
-
-  selectStmtBuffer.WriteString(selectors[0])
-  selectStmtBuffer.WriteString("='testuser1'")
-  for _, selector := range(selectors[1:]) {
-    selectStmtBuffer.WriteString(" AND ")
-    selectStmtBuffer.WriteString(selector)
-    selectStmtBuffer.WriteString("=")
-    selectStmtBuffer.WriteString("?")
-  }
-  selectStmtBuffer.WriteString(";")
-  fmt.Println(selectStmtBuffer.String())
-
-  err := db.conn.QueryRow(selectStmtBuffer.String()).Scan(returnValue.id, returnValue.name, returnValue.email, returnValue.username, returnValue.password)
-
-  if err != nil {
-    log.Panic(err)
-  }
-
-}
-*/
 func (db DB) Insert()  {
   /*
 	log.Println("Beginning transaction...")
