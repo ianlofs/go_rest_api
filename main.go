@@ -13,7 +13,7 @@ import (
 )
 
 func main() {
-  prod := os.Getenv("Production")
+  prod := os.Getenv("PRODUCTION")
   if prod != "true" {
     err := godotenv.Load()
     if err != nil {
@@ -34,5 +34,10 @@ func main() {
   r.POST("/login", controllers.Login(db))
   r.GET("/user/:id", controllers.AuthRequest(controllers.GetUser(db)))
 
-  log.Fatal(http.ListenAndServe(":8080", r))
+  PORT := os.Getenv("PORT")
+
+  if PORT == "" {
+    PORT = "8080"
+  }
+  log.Fatal(http.ListenAndServe(":" + PORT, r))
 }

@@ -113,11 +113,12 @@ func AuthRequest(handleFunc httprouter.Handle) httprouter.Handle {
       handleFunc(w,r, params);
     } else if ve, ok := err.(*jwt.ValidationError); ok {
       if ve.Errors&jwt.ValidationErrorMalformed != 0 {
-          http.Error(w, "Error: Malformed auth token.", http.StatusBadRequest)
+        http.Error(w, "Error: Malformed auth token.", http.StatusBadRequest)
       } else if ve.Errors&(jwt.ValidationErrorExpired|jwt.ValidationErrorNotValidYet) != 0 {
-          http.Error(w, "Error: Auth token expired.", http.StatusUnauthorized)
+        w.Header().Add("WWW-Authenticate", "Bearer")
+        http.Error(w, "Error: Auth token expired.", http.StatusUnauthorized)
       } else {
-          http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+        http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
       }
       return
     } else {
