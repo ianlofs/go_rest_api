@@ -13,7 +13,8 @@ type DB struct {
 }
 
 func New() (DB, error) {
-	conn, err := sql.Open("postgres", fmt.Sprintf("user=%s dbname=%s password=%s sslmode=%s", os.Getenv("DB_USER"), os.Getenv("DB_TABLE"), os.Getenv("DB_PSSWRD"), "disable"))
+	conn, err := sql.Open("postgres", fmt.Sprintf("host=%s user=%s dbname=%s password=%s port=%s sslmode=disable",
+    os.Getenv("DB_HOST"), os.Getenv("DB_USER"), os.Getenv("DB_NAME"), os.Getenv("DB_PSSWRD"), os.Getenv("DB_PORT")))
 	return DB{conn}, err
 }
 
