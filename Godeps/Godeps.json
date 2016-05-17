@@ -2,6 +2,9 @@
 	"ImportPath": "github.com/ianlofs/go_rest_api",
 	"GoVersion": "go1.6",
 	"GodepVersion": "v62",
+	"Packages": [
+		"./cmd/go_rest_api/"
+	],
 	"Deps": [
 		{
 			"ImportPath": "github.com/dgrijalva/jwt-go",
