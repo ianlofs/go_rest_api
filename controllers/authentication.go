@@ -5,6 +5,7 @@ import (
   "io/ioutil"
   "log"
   "net/http"
+  "os"
   "time"
 
   "golang.org/x/crypto/bcrypt"
@@ -28,6 +29,11 @@ func InitAuth() {
 
 func initPrivateKey() {
   var err error
+  privateKeyString := os.Getenv("PRIVATE_KEY")
+  if privateKeyString != "" {
+    privateKey = []byte(privateKeyString)
+    return
+  }
 	privateKey, err = ioutil.ReadFile("controllers/private.pem")
 
   // dont start if privatekey reading fails
@@ -38,6 +44,11 @@ func initPrivateKey() {
 
 func initPublicKey() {
   var err error
+  publicKeyString := os.Getenv("PUBLIC_KEY")
+  if publicKeyString != "" {
+    publicKey = []byte(publicKeyString)
+    return
+  }
   publicKey, err = ioutil.ReadFile("controllers/pubkey.pem")
 
   // dont start if publickey reading fails
