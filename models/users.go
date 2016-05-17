@@ -16,19 +16,24 @@ type User struct {
 }
 
 func FindUserByUsername(username string, db database.DB) (*User, error) {
+  return findUserByField("username", username, db)
+}
 
-  fmt.Println(username)
+func FindUserByID(id string, db database.DB) (*User, error) {
+  return findUserByField("id", id, db)
+}
+
+func findUserByField(field string, value string, db database.DB) (*User, error) {
   user := User{}
-  stmt, err := db.Conn.Prepare("SELECT id, name, email, username, password FROM users WHERE username=$1;")
+
+  // definitely not safe from sql injection, will figure out a better way to do this
+  sql := "SELECT id, name, email, username, password FROM users WHERE " + field + "=$1";
+  stmt, err := db.Conn.Prepare(sql)
   if err != nil {
     return nil, err
   }
   defer stmt.Close()
-  stmt.QueryRow(username).Scan(&user.ID, &user.Name, &user.Email, &user.Username, &user.Password)
+  stmt.QueryRow(value).Scan(&user.ID, &user.Name, &user.Email, &user.Username, &user.Password)
+  fmt.Println(user.Username.String)
   return &user, nil
-}
-
-func (user User) FindUserByEmail(email string, db database.DB) (*User, error) {
-
-  return &User{}, nil
 }
