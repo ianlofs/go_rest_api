@@ -2,7 +2,6 @@ package models
 
 import (
   "database/sql"
-  "fmt"
 
   "github.com/ianlofs/go_rest_api/database"
 )
@@ -26,7 +25,6 @@ func FindUserByID(id string, db database.DB) (*User, error) {
 func findUserByField(field string, value string, db database.DB) (*User, error) {
   user := User{}
 
-  // definitely not safe from sql injection, will figure out a better way to do this
   sql := "SELECT id, name, email, username, password FROM users WHERE " + field + "=$1";
   stmt, err := db.Conn.Prepare(sql)
   if err != nil {
@@ -34,6 +32,5 @@ func findUserByField(field string, value string, db database.DB) (*User, error) 
   }
   defer stmt.Close()
   stmt.QueryRow(value).Scan(&user.ID, &user.Name, &user.Email, &user.Username, &user.Password)
-  fmt.Println(user.Username.String)
   return &user, nil
 }

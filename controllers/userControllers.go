@@ -32,14 +32,14 @@ func GetUser(db database.DB) (httprouter.Handle) {
     user, err := models.FindUserByID(id, db)
     if err != nil {
       log.Println(err)
-      http.Error(w, http.StatusText(http.StatusNotFound), http.StatusNotFound)
+      http.Error(w, "Error: " + http.StatusText(http.StatusNotFound), http.StatusNotFound)
       return
     }
 
     respBody, err := UserJSON{}.MarshalUser(user)
     if err != nil {
       log.Println(err)
-      http.Error(w, http.StatusText(http.StatusUnauthorized), http.StatusUnauthorized)
+      http.Error(w, "Error: " + http.StatusText(http.StatusUnauthorized), http.StatusUnauthorized)
       return
     }
 

@@ -2,61 +2,18 @@ package controllers
 
 import (
   "fmt"
-  "io/ioutil"
   "log"
   "net/http"
-  "os"
   "time"
 
   "golang.org/x/crypto/bcrypt"
   "github.com/julienschmidt/httprouter"
   jwt "github.com/dgrijalva/jwt-go"
 
+  "github.com/ianlofs/go_rest_api/constants"
   "github.com/ianlofs/go_rest_api/database"
   "github.com/ianlofs/go_rest_api/models"
 )
-
-
-var (
-  publicKey []byte
-  privateKey []byte
-)
-
-func InitAuth() {
-  initPrivateKey()
-  initPublicKey()
-}
-
-func initPrivateKey() {
-  var err error
-  privateKeyString := os.Getenv("PRIVATE_KEY")
-  if privateKeyString != "" {
-    privateKey = []byte(privateKeyString)
-    return
-  }
-	privateKey, err = ioutil.ReadFile("controllers/private.pem")
-
-  // dont start if privatekey reading fails
-  if err != nil {
-    log.Fatalln("private key not read")
-  }
-}
-
-func initPublicKey() {
-  var err error
-  publicKeyString := os.Getenv("PUBLIC_KEY")
-  if publicKeyString != "" {
-    publicKey = []byte(publicKeyString)
-    return
-  }
-  publicKey, err = ioutil.ReadFile("controllers/pubkey.pem")
-
-  // dont start if publickey reading fails
-  if err != nil {
-    log.Fatalln("public key not read")
-  }
-}
-
 
 func Login(db database.DB) httprouter.Handle {
   return func(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
@@ -84,7 +41,7 @@ func Login(db database.DB) httprouter.Handle {
     token := jwt.New(jwt.GetSigningMethod("RS256"))
     token.Claims["ID"] = user.ID.Int64
     token.Claims["exp"] = time.Now().Add(72 * time.Hour).Unix() // Make the token valid for 3 days
-    tokenString, err := token.SignedString(privateKey)
+    tokenString, err := token.SignedString(constants.PrivateKey)
     if err != nil {
       log.Println(err)
       http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
@@ -112,7 +69,7 @@ func AuthRequest(handleFunc httprouter.Handle) httprouter.Handle {
       if _, ok := token.Method.(*jwt.SigningMethodRSA); !ok {
         return nil, fmt.Errorf("Unexpected signing method: %v", token.Header["alg"])
       }
-      return publicKey, nil
+      return constants.PublicKey, nil
     })
 
     if token == nil {
@@ -123,9 +80,9 @@ func AuthRequest(handleFunc httprouter.Handle) httprouter.Handle {
     if token.Valid {
       handleFunc(w,r, params);
     } else if ve, ok := err.(*jwt.ValidationError); ok {
-      if ve.Errors&jwt.ValidationErrorMalformed != 0 {
+      if ve.Errors & jwt.ValidationErrorMalformed != 0 {
         http.Error(w, "Error: Malformed auth token.", http.StatusBadRequest)
-      } else if ve.Errors&(jwt.ValidationErrorExpired|jwt.ValidationErrorNotValidYet) != 0 {
+      } else if ve.Errors & (jwt.ValidationErrorExpired | jwt.ValidationErrorNotValidYet) != 0 {
         w.Header().Add("WWW-Authenticate", "Bearer")
         http.Error(w, "Error: Auth token expired.", http.StatusUnauthorized)
       } else {
@@ -133,7 +90,7 @@ func AuthRequest(handleFunc httprouter.Handle) httprouter.Handle {
       }
       return
     } else {
-      http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+      http.Error(w, "Error: " + http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
       return
     }
   }

@@ -2,10 +2,10 @@ package database
 
 import (
 	"database/sql"
-	"fmt"
-	"os"
 
-	_ "github.com/lib/pq"
+	_ "github.com/lib/pq" // needed for db connection
+
+  "github.com/ianlofs/go_rest_api/constants"
 )
 
 type DB struct {
@@ -13,13 +13,7 @@ type DB struct {
 }
 
 func New() (DB, error) {
-  dbURL := os.Getenv("DATABASE_URL")
-
-  if dbURL == "" {
-    dbURL = fmt.Sprintf("host=%s user=%s dbname=%s password=%s port=%s sslmode=disable",
-      os.Getenv("DB_HOST"), os.Getenv("DB_USER"), os.Getenv("DB_NAME"), os.Getenv("DB_PSSWRD"), os.Getenv("DB_PORT"))
-  }
-	conn, err := sql.Open("postgres", dbURL)
+	conn, err := sql.Open("postgres", constants.DB_URL)
 	return DB{conn}, err
 }
 
