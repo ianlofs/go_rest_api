@@ -1,3 +1,4 @@
 *.pem
 *.rsa
 *.env
+vendor

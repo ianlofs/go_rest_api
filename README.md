@@ -1,7 +1,8 @@
 ## go_rest_api
 
-Trying to figure out authentication and interactions with a database in go.
+Trying to figure out authentication, and interactions with a database in go.
 
+```
 +-------------+
 | client      |
 +-------------+
@@ -15,3 +16,4 @@ Trying to figure out authentication and interactions with a database in go.
 |        |    JSON Web Token         |        |
 |        |  <---------------------   |        |
 +--------+                           +--------+
+```

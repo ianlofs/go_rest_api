@@ -10,6 +10,7 @@ import (
   "github.com/ianlofs/go_rest_api/constants"
   "github.com/ianlofs/go_rest_api/controllers"
   "github.com/ianlofs/go_rest_api/database"
+  "github.com/ianlofs/go_rest_api/middleware"
 )
 
 func main() {
@@ -25,8 +26,9 @@ func main() {
   defer db.Close()
 
   r := httprouter.New()
+  r.POST("/register", controllers.Register(db))
   r.POST("/login", controllers.Login(db))
-  r.GET("/user/:id", controllers.AuthRequest(controllers.GetUser(db)))
+  r.GET("/user/:username", middleware.AuthRequest(controllers.GetUser(db)))
 
   log.Fatal(http.ListenAndServe(":" + constants.Port, r))
 }
