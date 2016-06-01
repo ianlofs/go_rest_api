@@ -62,7 +62,7 @@ func ActivateUser(db database.DB, id string) error {
 }
 
 func FindUserByEmail(db database.DB, email string) (*User, error) {
-  selectData := map[string]string{"email":email}
+  selectData := map[string]string{"email": email}
   return findUserByField(db, selectData)
 }
 
@@ -80,9 +80,10 @@ func findUserByField(db database.DB, selectData map[string]string) (*User, error
   user := User{}
   sql := "SELECT id, name, email, username, password FROM users WHERE"
   for key, value := range(selectData) {
-      sql += " " + key + "=" + value + " "
+      sql += " " + key + "='" + value + "'"
   }
   sql += ";"
+  fmt.Println(sql);
   stmt, err := db.Conn.Prepare(sql)
   if err != nil {
     return nil, err
