@@ -61,27 +61,26 @@ func ActivateUser(db database.DB, id string) error {
   return nil
 }
 
-func FindUserByEmail(email string, db database.DB) (*User, error) {
-  selectData := map[string]interface{}{"email":email}
-  return findUserByField( db, selectData)
-}
-
-func FindUserByEmailOrUsername(db database.DB, email, username) (*User, error) {
-  selectData := map[string]interface{}{"email":email, "username": username}
+func FindUserByEmail(db database.DB, email string) (*User, error) {
+  selectData := map[string]string{"email":email}
   return findUserByField(db, selectData)
 }
 
-func FindUserByID(id string, db database.DB) (*User, error) {
-  return findUserByField( db, ["id"], [id])
+func FindUserByUsername(db database.DB, username string) (*User, error) {
+  selectData := map[string]string{"username": username}
+  return findUserByField(db, selectData)
 }
 
-func findUserByField(db database.DB, selectData map[string]interface{}) (*User, error) {
+func FindUserByID(db database.DB, id string) (*User, error) {
+   m := map[string]string{"id": id}
+  return findUserByField( db, m)
+}
+
+func findUserByField(db database.DB, selectData map[string]string) (*User, error) {
   user := User{}
   sql := "SELECT id, name, email, username, password FROM users WHERE"
   for key, value := range(selectData) {
-    if value != nil {
       sql += " " + key + "=" + value + " "
-    }
   }
   sql += ";"
   stmt, err := db.Conn.Prepare(sql)
@@ -89,7 +88,7 @@ func findUserByField(db database.DB, selectData map[string]interface{}) (*User, 
     return nil, err
   }
   defer stmt.Close()
-  err = stmt.QueryRow(value).Scan(&user.ID, &user.Name, &user.Email, &user.Username, &user.Password)
+  err = stmt.QueryRow().Scan(&user.ID, &user.Name, &user.Email, &user.Username, &user.Password)
   if err != nil {
     fmt.Println(err)
     return nil, err

@@ -58,12 +58,12 @@ func Register(db database.DB) httprouter.Handle {
     }
 
     // TODO: These two db calls should happen concurrently
-    _, err = models.FindUserByUsername(userJson.Username, db)
+    _, err = models.FindUserByUsername(db, userJson.Username)
     if err != nil {
       http.Error(w, "Error: Account with that username already exists", http.StatusOK)
       return
     }
-    _, err = models.FindUserByEmail(userJson.Email, db)
+    _, err = models.FindUserByEmail(db, userJson.Email)
     if err != nil {
       http.Error(w, "Error: Account with that email already exists", http.StatusOK)
       return
@@ -92,7 +92,7 @@ func Login(db database.DB) httprouter.Handle {
       return
     }
     // authorize user
-    user, err := models.FindUserByUsername(username, db)
+    user, err := models.FindUserByUsername(db, username)
     if err != nil {
       log.Println(err)
       w.Header().Add("WWW-Authenticate", "Basic")
@@ -125,7 +125,7 @@ func Login(db database.DB) httprouter.Handle {
 func GetUser(db database.DB) (httprouter.Handle) {
   return func(w http.ResponseWriter, r *http.Request, params httprouter.Params) {
     username := params.ByName("username")
-    user, err := models.FindUserByUsername(username, db)
+    user, err := models.FindUserByUsername(db, username)
     if err != nil {
       log.Println(err)
       http.Error(w, "Error: " + http.StatusText(http.StatusNotFound), http.StatusNotFound)
